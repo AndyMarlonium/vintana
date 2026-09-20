@@ -66,6 +66,7 @@
     </div>
   </div>
 
+  <div style="font-weight:500;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#62B394;margin-top:26px">Build 8 · fanalahidy tokana</div>
   <div class="foot">La clé est retenue sur cet appareil : une seule saisie. L'application fonctionne ensuite sans connexion. Si vous effacez les données du navigateur, il faudra la saisir à nouveau.</div>
 </div>
 
@@ -127,7 +128,10 @@ const _kf2 = (d) => {
 async function open(pass, quiet) {
   const p = PAY[theme];
   if (_nm2(pass) !== _nm2(_kf2(dev))) {
-    if (!quiet) { msg.textContent = "Tsy mety amin'ity fitaovana ity ity fanalahidy ity · Clé non valable pour cet appareil."; msg.className = "bad"; }
+    if (!quiet) {
+      msg.innerHTML = "Clé non valable pour cet appareil.<br>Kaody fitaovana ampiasaina · code appareil en cours : <b>" + dev + "</b><br>Vérifiez que le générateur a reçu exactement ce code.";
+      msg.className = "bad";
+    }
     else { msg.textContent = ""; }
     localStorage.removeItem("vintana.pass");
     return;
@@ -163,7 +167,17 @@ document.getElementById("go").addEventListener("click", () => {
 input.addEventListener("keydown", (e) => { if (e.key === "Enter") document.getElementById("go").click(); });
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+  window.addEventListener("load", async () => {
+    try {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r => r.unregister()));
+      if (window.caches) {
+        const ks = await caches.keys();
+        await Promise.all(ks.filter(k => k !== "vintana-v8").map(k => caches.delete(k)));
+      }
+    } catch (e) {}
+    navigator.serviceWorker.register("sw.js").catch(() => {});
+  });
 }
 const saved = localStorage.getItem("vintana.pass");
 if (saved) { msg.textContent = "Manokatra…"; open(saved, true); }
