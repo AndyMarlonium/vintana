@@ -1,4 +1,4 @@
-const CACHE = "vintana-v9";
+const CACHE = "vintana-v10";
 const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE)
