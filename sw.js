@@ -1,6 +1,5 @@
-const CACHE = "vintana-v6";
-const ASSETS = ["./", "./index.html", "./payload-v2.js", "./manifest.webmanifest", "./icon.svg"];
-
+const CACHE = "vintana-v7";
+const ASSETS = ["./", "./index.html", "./manifest.webmanifest", "./icon.svg"];
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE)
     .then(c => c.addAll(ASSETS.map(u => new Request(u, { cache: "reload" }))))
@@ -16,9 +15,7 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
   const isFont = req.destination === "font" || /fonts\.(googleapis|gstatic)\.com/.test(url.hostname);
-  const isDoc = !isFont && (req.mode === "navigate" || req.destination === "document"
-    || url.pathname.endsWith(".html") || url.pathname.endsWith(".js"));
-  if (isDoc) {
+  if (!isFont) {
     e.respondWith(fetch(req).then(res => {
       const copy = res.clone();
       caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
