@@ -59,6 +59,8 @@
   </div>
 
   <div class="row">
+    <div class="btn ghost" id="install" style="display:none">Apetraho · Installer l'application</div>
+    <div id="instmsg" style="font-weight:300;font-size:12px;line-height:1.55;color:rgba(242,241,237,.5);display:none"></div>
     <div class="btn primary" id="go">Hanokatra · Ouvrir</div>
     <div class="two">
       <div class="btn ghost" data-theme="dark">Maizina · Sombre</div>
@@ -66,7 +68,7 @@
     </div>
   </div>
 
-  <div style="font-weight:500;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#62B394;margin-top:26px">Build 8 · fanalahidy tokana</div>
+  <div style="font-weight:500;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#62B394;margin-top:26px">Build 9 · fametrahana</div>
   <div class="foot">La clé est retenue sur cet appareil : une seule saisie. L'application fonctionne ensuite sans connexion. Si vous effacez les données du navigateur, il faudra la saisir à nouveau.</div>
 </div>
 
@@ -173,12 +175,58 @@ if ("serviceWorker" in navigator) {
       await Promise.all(regs.map(r => r.unregister()));
       if (window.caches) {
         const ks = await caches.keys();
-        await Promise.all(ks.filter(k => k !== "vintana-v8").map(k => caches.delete(k)));
+        await Promise.all(ks.filter(k => k !== "vintana-v9").map(k => caches.delete(k)));
       }
     } catch (e) {}
     navigator.serviceWorker.register("sw.js").catch(() => {});
   });
 }
+const instBtn = document.getElementById("install");
+const instMsg = document.getElementById("instmsg");
+const standalone = window.matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+let deferredPrompt = null;
+
+function showInstall(text) {
+  instBtn.style.display = "block";
+  if (text) { instMsg.textContent = text; instMsg.style.display = "block"; }
+}
+
+window.addEventListener("beforeinstallprompt", (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  if (!standalone) showInstall("");
+});
+
+instBtn.addEventListener("click", async () => {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    deferredPrompt = null;
+    instMsg.textContent = outcome === "accepted"
+      ? "Napetraka · Installée. Ouvrez Vintana depuis votre écran d'accueil."
+      : "Najanona · Installation annulée.";
+    instMsg.style.display = "block";
+    if (outcome === "accepted") instBtn.style.display = "none";
+    return;
+  }
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  instMsg.innerHTML = ios
+    ? "Sur iPhone : touchez <b>Partager</b> en bas de Safari, puis <b>Sur l'écran d'accueil</b>."
+    : "Menu du navigateur (⋮), puis <b>Ajouter à l'écran d'accueil</b>.";
+  instMsg.style.display = "block";
+});
+
+window.addEventListener("appinstalled", () => {
+  instBtn.style.display = "none";
+  instMsg.textContent = "Napetraka · Installée. L'application fonctionne maintenant hors connexion.";
+  instMsg.style.display = "block";
+});
+
+if (!standalone) {
+  // no beforeinstallprompt on iOS Safari — offer the manual route after a moment
+  setTimeout(() => { if (!deferredPrompt && instBtn.style.display === "none") showInstall(""); }, 1200);
+}
+
 const saved = localStorage.getItem("vintana.pass");
 if (saved) { msg.textContent = "Manokatra…"; open(saved, true); }
 </script>
