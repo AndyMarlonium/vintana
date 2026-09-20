@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vintana</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0F0F0E">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; }
+  body { margin:0; background:#0F0F0E; color:#F2F1ED; font-family:Jost, sans-serif;
+         min-height:100dvh; display:flex; justify-content:center; padding:66px 26px 48px; }
+  .wrap { width:100%; max-width:430px; display:flex; flex-direction:column; }
+  a { color:#62B394; text-decoration:none; } a:hover { color:#F2F1ED; }
+  .kicker { font-weight:500; font-size:10px; letter-spacing:.3em; text-transform:uppercase; color:#62B394; }
+  h1 { font-weight:200; font-size:40px; line-height:1.05; letter-spacing:-.01em; margin:22px 0 12px; }
+  .lede { font-weight:300; font-size:14px; line-height:1.6; color:rgba(242,241,237,.55); text-wrap:pretty; }
+  label { font-weight:500; font-size:9px; letter-spacing:.2em; text-transform:uppercase; color:rgba(242,241,237,.35); }
+  input { width:100%; margin-top:12px; background:transparent; border:1px solid rgba(242,241,237,.22);
+          color:#F2F1ED; font-family:Jost, sans-serif; font-weight:300; font-size:26px; letter-spacing:.1em;
+          padding:15px 13px; outline:none; text-transform:uppercase; }
+  input:focus { border-color:#62B394; }
+  .btn { text-align:center; padding:18px 0; font-weight:500; font-size:12px; letter-spacing:.14em;
+         text-transform:uppercase; cursor:pointer; border:1px solid transparent; }
+  .primary { background:#F2F1ED; color:#0F0F0E; }
+  .primary:hover { background:#62B394; }
+  .ghost { border-color:rgba(242,241,237,.22); color:#F2F1ED; }
+  .ghost:hover { border-color:#62B394; color:#62B394; }
+  .row { display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .two { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  #msg { font-weight:300; font-size:12.5px; line-height:1.5; margin-top:11px; min-height:19px; color:rgba(242,241,237,.5); }
+  #msg.bad { color:#D96A50; }
+  .foot { font-weight:300; font-size:11.5px; line-height:1.65; color:rgba(242,241,237,.35);
+          border-top:1px solid rgba(242,241,237,.14); padding-top:16px; margin-top:34px; text-wrap:pretty; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="kicker">Vintana</div>
+  <h1>Fanalahidy<br>fidirana</h1>
+  <p class="lede">Saisissez le code d'ouverture reçu du distributeur. Il déverrouille l'application sur cet appareil, puis une clé propre à votre téléphone vous sera demandée à l'intérieur.</p>
+
+  <div style="margin-top:30px;border:1px solid rgba(242,241,237,.14);background:rgba(242,241,237,.04);padding:17px 16px">
+    <label>Kaody fitaovana · Code appareil</label>
+    <div id="dev" style="font-weight:200;font-size:34px;line-height:1.1;letter-spacing:.08em;color:#62B394;margin-top:11px">…</div>
+    <div id="copy" class="btn ghost" style="display:inline-block;padding:10px 16px;font-size:9.5px;margin-top:14px">Adika · Copier</div>
+    <div style="font-weight:300;font-size:12px;line-height:1.55;color:rgba(242,241,237,.5);margin-top:12px">Envoyez ce code au distributeur pour recevoir la clé propre à ce téléphone, demandée à l'intérieur de l'application.</div>
+  </div>
+
+  <div style="margin-top:26px">
+    <label>Kaody fanokafana · Code d'ouverture</label>
+    <input id="pass" placeholder="VINTANA-••••" spellcheck="false" autocomplete="off">
+    <div style="font-weight:300;font-size:12px;line-height:1.55;color:rgba(242,241,237,.5);margin-top:10px">Ce n'est pas la clé à six caractères du générateur : celle-ci est demandée à l'intérieur de l'application, après l'ouverture.</div>
+    <div id="msg"></div>
+  </div>
+
+  <div class="row">
+    <div class="btn primary" id="go">Hanokatra · Ouvrir</div>
+    <div class="two">
+      <div class="btn ghost" data-theme="dark">Maizina · Sombre</div>
+      <div class="btn ghost" data-theme="clair">Mazava · Clair</div>
+    </div>
+  </div>
+
+  <div class="foot">Le code est conservé sur cet appareil : vous ne le saisirez qu'une fois. L'application fonctionne ensuite sans connexion. Ajoutez-la à votre écran d'accueil par le menu du navigateur.</div>
+</div>
+
+<script src="payload-v2.js"></script>
+<script>
+const dec = new TextDecoder();
+const u8 = (s) => { const b = atob(s); const a = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) a[i] = b.charCodeAt(i); return a; };
+const msg = document.getElementById("msg");
+const input = document.getElementById("pass");
+let theme = localStorage.getItem("vintana.theme") || "dark";
+
+const _L = "ABCDEFGHJKLMNPQRSTUVWXYZ", _D = "0123456789";
+function deviceCode() {
+  let d = localStorage.getItem("vintana.device");
+  if (!d) {
+    const r = new Uint8Array(6); crypto.getRandomValues(r);
+    d = _L[r[0] % 24] + _L[r[1] % 24] + _D[r[2] % 10] + "-" + _L[r[3] % 24] + _D[r[4] % 10] + _L[r[5] % 24];
+    localStorage.setItem("vintana.device", d);
+  }
+  return d;
+}
+const dev = deviceCode();
+document.getElementById("dev").textContent = dev;
+document.getElementById("copy").addEventListener("click", (e) => {
+  navigator.clipboard.writeText(dev).then(() => {
+    e.target.textContent = "Voatahiry · Copié";
+    setTimeout(() => { e.target.textContent = "Adika · Copier"; }, 1600);
+  });
+});
+
+function markTheme() {
+  document.querySelectorAll("[data-theme]").forEach(el => {
+    const on = el.dataset.theme === theme;
+    el.style.background = on ? "#F2F1ED" : "transparent";
+    el.style.color = on ? "#0F0F0E" : "#F2F1ED";
+    el.style.borderColor = on ? "#F2F1ED" : "rgba(242,241,237,.22)";
+  });
+}
+document.querySelectorAll("[data-theme]").forEach(el => el.addEventListener("click", () => {
+  theme = el.dataset.theme;
+  localStorage.setItem("vintana.theme", theme);
+  markTheme();
+  const v = (input.value.trim() || localStorage.getItem("vintana.pass") || "");
+  if (v) { msg.textContent = "Manokatra…"; msg.className = ""; unlock(v, false); }
+}));
+markTheme();
+
+async function unlock(pass, quiet) {
+  if (!window.VINTANA_PAYLOAD) {
+    msg.textContent = "Fichier payload-v2.js absent : déposez tout le dossier, pas seulement index.html.";
+    msg.className = "bad";
+    return false;
+  }
+  const p = window.VINTANA_PAYLOAD[theme];
+  const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+  const key = await crypto.subtle.deriveKey(
+    { name: "PBKDF2", salt: u8(p.salt), iterations: 100000, hash: "SHA-256" },
+    base, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  let plain;
+  try {
+    plain = await crypto.subtle.decrypt({ name: "AES-GCM", iv: u8(p.iv) }, key, u8(p.ct));
+  } catch (e) {
+    if (!quiet) { msg.textContent = "Code non valable."; msg.className = "bad"; }
+    else { msg.textContent = ""; }
+    localStorage.removeItem("vintana.pass");
+    return false;
+  }
+  localStorage.setItem("vintana.pass", pass);
+  const html = dec.decode(plain);
+  document.open();
+  document.write(html);
+  document.close();
+  return true;
+}
+
+document.getElementById("go").addEventListener("click", () => {
+  const v = input.value.trim();
+  if (!v) { msg.textContent = "Soraty ny kaody fanokafana."; msg.className = "bad"; return; }
+  msg.textContent = "Manokatra…"; msg.className = "";
+  unlock(v, false).catch((e) => {
+    msg.textContent = "Tsy nahavita: " + (e && e.message ? e.message : e);
+    msg.className = "bad";
+  });
+});
+input.addEventListener("keydown", (e) => { if (e.key === "Enter") document.getElementById("go").click(); });
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+}
+
+const saved = localStorage.getItem("vintana.pass");
+if (saved) { msg.textContent = "Manokatra…"; unlock(saved, true).catch(() => { msg.textContent = ""; }); }
+</script>
+</body>
+</html>
