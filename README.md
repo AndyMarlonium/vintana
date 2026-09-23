@@ -41,6 +41,8 @@ Le dossier `dist/` est régénéré entièrement.
 
 ## Historique
 
+- Build 22 : mode Association dans la lecture à deux (rôles, caisse, décision, conseil, lunes d'affaires) ; dates propices personnelles par domaine, lunes et heures fortes, conseils.
+- Build 21 : lecture de couple approfondie (directions, éléments, nombres, rapprochements, oppositions, meilleures lunes) ; vintana de l'enfant à naître (onglet Rites).
 - Build 20 : clés signées (ECDSA) et application déchiffrable seulement avec une clé valable. Les anciennes clés ne fonctionnent plus.
 - Build 19 : recherche du bon jour pour un projet (onglet Rites) ; partage du portrait en image.
 - Build 18 : orientation de naissance (plan de la maison, place, direction favorable et à éviter).
