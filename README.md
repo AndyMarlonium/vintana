@@ -1,6 +1,6 @@
 # Vintana
 
-Astrologie malgache : vintana du jour, calendrier, sikidy, rites, numérologie.
+Astrologie malgache : vintana du jour, calendrier, sikidy, rites, numérologie, portrait de naissance.
 Application web installable, fonctionne hors connexion après la première ouverture.
 
 ## Publier
@@ -10,27 +10,29 @@ Déposez **le contenu de ce dossier** à la racine du dépôt, puis activez GitH
 
 Fichiers à publier :
 
-- `index.html` — écran d'ouverture
-- `payload-v2.json` — application chiffrée (AES-256-GCM)
-- `sw.js`, `manifest.webmanifest`, `icon.svg` — installation et hors-ligne
+- `index.html` : écran d'ouverture + application chiffrée (thèmes sombre et clair intégrés)
+- `sw.js`, `manifest.webmanifest` : installation et hors-ligne
+- `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`, `apple-touch-icon.png` : icônes
 
 L'adresse publique sera de la forme `https://<compte>.github.io/<depot>/`.
 
-## Deux verrous
+## Clé d'appareil
 
-1. **Code d'ouverture** — le même pour tous vos acheteurs. Il déchiffre l'application.
-   Sans lui, `payload.js` est illisible : ce n'est pas du code masqué, c'est du chiffré.
-2. **Clé d'appareil** — demandée à l'intérieur, propre à chaque téléphone.
-   Générée par `prive/Vintana Cle (generateur).html`, à partir du code appareil que
-   l'utilisateur vous envoie. Ce fichier s'ouvre seul dans un navigateur, sans réseau.
-
-Le code d'ouverture actuel est `VINTANA-2026`. Pour le changer, demandez-moi de
-reconstruire `payload.js` avec le nouveau code.
+Chaque téléphone affiche un code appareil. La clé correspondante est générée par
+`prive/Vintana Cle (generateur).html` à partir de ce code. Elle est retenue sur l'appareil.
 
 ## À ne jamais publier
 
-- `prive/Vintana Cle (generateur).html` — le générateur de clés
-- `Vintana App.dc.html` et `Vintana App Clair.dc.html` — les sources en clair
-- `support.js`
+- le générateur de clés ;
+- le dossier `source/` (application en clair et script de construction).
 
-Ces fichiers restent chez vous. Qui les possède contourne les deux verrous.
+## Reconstruire
+
+Depuis `source/` : `python3 build.py` (nécessite le paquet Python `cryptography`).
+Le dossier `dist/` est régénéré entièrement.
+
+## Historique
+
+- Build 17 : thème clair réparé ; portrait de naissance par personne (tempérament,
+  carrière, argent, deux pierres de naissance, aliments de naissance, année personnelle).
+- Build 16 : pierres et table du jour.
