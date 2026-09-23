@@ -1,6 +1,6 @@
 # Vintana
 
-Astrologie malgache : vintana du jour, calendrier, sikidy, rites, numérologie, portrait de naissance.
+Astrologie malgache : vintana du jour, calendrier, sikidy, rites, numérologie, portrait de naissance, orientation.
 Application web installable, fonctionne hors connexion après la première ouverture.
 
 ## Publier
@@ -33,6 +33,7 @@ Le dossier `dist/` est régénéré entièrement.
 
 ## Historique
 
+- Build 18 : orientation de naissance (plan de la maison, place, direction favorable et à éviter).
 - Build 17 : thème clair réparé ; portrait de naissance par personne (tempérament,
   carrière, argent, deux pierres de naissance, aliments de naissance, année personnelle).
 - Build 16 : pierres et table du jour.
