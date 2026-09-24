@@ -41,6 +41,7 @@ Le dossier `dist/` est régénéré entièrement.
 
 ## Historique
 
+- Build 23 : place de l'argent dans la maison selon la naissance ; bouton de partage retiré.
 - Build 22 : mode Association dans la lecture à deux (rôles, caisse, décision, conseil, lunes d'affaires) ; dates propices personnelles par domaine, lunes et heures fortes, conseils.
 - Build 21 : lecture de couple approfondie (directions, éléments, nombres, rapprochements, oppositions, meilleures lunes) ; vintana de l'enfant à naître (onglet Rites).
 - Build 20 : clés signées (ECDSA) et application déchiffrable seulement avec une clé valable. Les anciennes clés ne fonctionnent plus.
